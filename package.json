@@ -1,11 +1,30 @@
 {
   "name": "sentence-builder",
   "version": "1.0.0",
-  "description": "",
+  "description": "Build a sentence with variability",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "John Callahan",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnwcallahan/sentence-builder.git"
+  },
+  "keywords": [
+    "cartesian",
+    "product",
+    "ai",
+    "voice",
+    "interface",
+    "sentence",
+    "builder",
+    "construct",
+    "language"
+  ],
+  "bugs": {
+    "url": "https://github.com/johnwcallahan/sentence-builder/issues"
+  },
+  "homepage": "https://github.com/johnwcallahan/sentence-builder#readme"
 }

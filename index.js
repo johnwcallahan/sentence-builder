@@ -9,30 +9,49 @@ module.exports = {
 /**
  * Builds sentence from array
  */
-function build(sentence, notSentence, shouldOutputArray) {
-	let arr = [];
+function build(sentence, exclude, shouldOutputArray) {
+  // Check input
+  if (!Array.isArray(sentence)) {
+    throw new TypeError;
+  }
+  if (sentence.length < 2) {
+    return sentence;
+  }
+
+  let arr = [];
 
   // Build sentence randomly
 	for (let i = 0; i < sentence.length; i++) {
-		let word = sentence[i][Math.floor(Math.random() * sentence[i].length)];
-		if (word !== "") {
-			arr.push(word);
-		}
-	}
+    let word;
+    word = typeof(sentence[i]) === 'string'
+      ? sentence[i]
+      : sentence[i][Math.floor(Math.random() * sentence[i].length)];
+    if (word !== "") {
+      arr.push(word);
+    }
+  }
 
   var output = arr.join(' ');
 
-  if (notSentence && Array.isArray(notSentence)) {
+  // If exclude is given and is a single string, convert it to array
+  if (exclude && typeof(exclude) == 'string') {
+    exclude = [exclude];
+  }
 
+  // If exclude parameter is given and valid, check against output
+  if (exclude && Array.isArray(exclude)) {
+    if (typeof(exclude) == 'string') {
+      exclude = [exclude];
+    }
     // Make sure there are possible combinations
-    if (arraysEqual(getCombos(sentence), notSentence)) {
+    if (arraysEqual(getCombos(sentence), exclude)) {
       throw new Error('No possible sentences');
     }
 
     // Keep generating new sentence until a qualifying one is found
-    for (let i = 0; i < notSentence.length; i++) {
-      if (notSentence[i] === output) {
-        return build(sentence, notSentence, shouldOutputArray)
+    for (let i = 0; i < exclude.length; i++) {
+      if (exclude[i] === output) {
+        return build(sentence, exclude, shouldOutputArray)
       }
     }
   }
@@ -43,14 +62,37 @@ function build(sentence, notSentence, shouldOutputArray) {
 }
 
 /**
- * Returns all possible combinations
+ * Get combos, check against exclude and limit
  */
-function combos(sentence, notSentence, index) {
+function combos(sentence, exclude, limit) {
+  
+  // Check input
+  if (!Array.isArray(sentence)) {
+    throw new TypeError;
+  }
+  if (sentence.length < 2) {
+    return sentence;
+  }
+
+  // Wrap single strings in array
+  for (let i = 0; i < sentence.length; i++) {
+    if (typeof(sentence[i]) == 'string') {
+      sentence[i] = [sentence[i]];
+    }
+  }
+
+  // Get all combinations
   let combinations = getCombos(sentence);
 
-  if (notSentence && Array.isArray(notSentence)) {
-    for (let i = 0; i < notSentence.length; i++) {
-      let index = combinations.indexOf(notSentence[i]);
+  // If exclude is given and is a single string, convert it to array
+  if (exclude && typeof(exclude) == 'string') {
+    exclude = [exclude];
+  }
+
+  // If exclude parameter is given and valid, remove those from combos
+  if (exclude && Array.isArray(exclude)) {
+    for (let i = 0; i < exclude.length; i++) {
+      let index = combinations.indexOf(exclude[i]);
       if (index !== -1) {
         combinations.splice(index, 1);
       }
@@ -58,25 +100,41 @@ function combos(sentence, notSentence, index) {
   }
 
   // Return specific combination if index is given
-  return index > -1 && index < combinations.length
-    ? combinations[index]
+  return limit >= 1 && limit <= combinations.length
+    ? combinations.slice(0, limit)
     : combinations;
 }
 
 /**
  * Returns number of possible combinations
  */
-function numCombos(sentence, notSentence) {
-  return combos(sentence, notSentence).length;
+function numCombos(sentence, exclude) {
+  return combos(sentence, exclude).length;
 }
-
 
 /* =============================================================================
 Helper Functions
 ============================================================================= */
 
 /**
- * Get all combinations
+ * Returns true if contents of both arrays are equal (order doesn't matter)
+ */
+function arraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+
+  arr1.sort();
+  arr2.sort();
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Gets Cartesian product
  */
 function getCombos(arr) {
   if (arr.length == 1) {
@@ -96,21 +154,4 @@ function getCombos(arr) {
     }
     return result;
   }
-}
-
-/**
- * Returns true if contents of both arrays are equal (order doesn't matter)
- */
-function arraysEqual(arr1, arr2) {
-  if (arr1.length !== arr2.length) return false;
-
-  arr1.sort();
-  arr2.sort();
-
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) {
-      return false;
-    }
-  }
-  return true;
 }

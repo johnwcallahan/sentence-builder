@@ -59,7 +59,7 @@ sentenceBuilder.combos(sentence);
 // ['Hello World!', 'Hi World!', 'Hello Earth!', 'Hi Earth!']
 ```
 
-Also takes the `excludes` parameter.
+Also takes the `exclude` parameter.
 ```javascript
 sentenceBuilder.combos(sentence, ['Hi World!', 'Hello Earth!']);
 // ['Hello World!', 'Hi Earth!']
